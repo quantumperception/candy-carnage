@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/button.uss?fileID=7433441132597879392&amp;guid=d4e52d9dca58ef843982c770f7a9547b&amp;type=3#button" />
+    <ui:VisualElement style="flex-grow: 1; justify-content: flex-end; align-items: center; flex-basis: auto; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement style="flex-grow: 1; align-items: center; align-self: stretch; justify-content: space-around; flex-basis: 20%; flex-wrap: nowrap;">
+            <ui:Button text="Nueva Partida" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NewGame" style="align-items: auto; justify-content: center; align-self: auto; -unity-text-align: lower-center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

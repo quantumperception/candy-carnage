@@ -1,0 +1,46 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="ItemSlot" src="project://database/Assets/UI%20Toolkit/InventorySlot.uxml?fileID=9197481963319205126&amp;guid=1dc017be05bc22844be7ce386c3f4f0a&amp;type=3#InventorySlot" />
+    <ui:Template name="CraftingInventory" src="project://database/Assets/UI%20Toolkit/CraftingInventory.uxml?fileID=9197481963319205126&amp;guid=80d867da9e3bc4440a65598eeb911548&amp;type=3#CraftingInventory" />
+    <Style src="project://database/Assets/Styles/BattleUI.uss?fileID=7433441132597879392&amp;guid=f3e80c32962ef8447918c3802f8f058d&amp;type=3#BattleUI" />
+    <ui:VisualElement name="BattleUI" style="flex-grow: 1; align-items: flex-start; justify-content: flex-end; align-self: flex-end; width: 100%;">
+        <ui:VisualElement style="flex-grow: 1; flex-basis: auto; flex-direction: row; align-items: auto; align-self: flex-start; justify-content: flex-start;">
+            <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DebugInfo" style="font-size: 24px; align-self: flex-start; visibility: visible; display: none;" />
+            <ui:Button text="| |" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Pause" style="align-self: flex-start;" />
+            <ui:Button text="0.25" parse-escape-sequences="true" display-tooltip-when-elided="true" name="QuarterSpeed" style="align-self: flex-start; align-items: auto;" />
+            <ui:Button text="0.5" parse-escape-sequences="true" display-tooltip-when-elided="true" name="HalfSpeed" style="align-self: flex-start; align-items: auto;" />
+            <ui:Button text="1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NormalSpeed" style="align-self: flex-start; align-items: auto;" />
+            <ui:VisualElement name="TeamSwitcher" style="flex-grow: 1; align-self: flex-start; justify-content: flex-start; align-items: flex-end;">
+                <ui:Button text="Team 1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Team1" />
+                <ui:Button text="Team 2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Team2" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Toolbar" style="flex-grow: initial; height: 20%; width: 100%; background-color: rgba(132, 132, 132, 0); -unity-background-image-tint-color: rgb(255, 255, 255); flex-basis: 20%; justify-content: space-around; align-self: center; align-items: center; flex-direction: row;">
+            <ui:VisualElement name="ItemInventory" style="flex-grow: initial; flex-basis: auto; flex-direction: row; align-items: center; justify-content: center; align-self: auto; width: 15%; height: 75%; flex-shrink: 1; -unity-background-scale-mode: stretch-to-fill; background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255); flex-wrap: wrap;">
+                <ui:Instance template="ItemSlot" name="Slot1" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot2" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot3" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot4" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot5" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot6" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="UnitInventory" style="flex-grow: initial; flex-basis: 30%; flex-direction: row; align-items: center; justify-content: center; align-self: auto; width: 40%; height: 95%; flex-shrink: 1; -unity-background-scale-mode: stretch-to-fill; background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255);">
+                <ui:Instance template="ItemSlot" name="Slot1" style="justify-content: center; align-items: center; width: 24%; height: 60%;" />
+                <ui:Instance template="ItemSlot" name="Slot2" style="justify-content: center; align-items: center; width: 24%; height: 60%;" />
+                <ui:Instance template="ItemSlot" name="Slot3" style="justify-content: center; align-items: center; width: 24%; height: 60%;" />
+                <ui:Instance template="ItemSlot" name="Slot4" style="justify-content: center; align-items: center; width: 24%; height: 60%;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="MaterialInventory" style="flex-grow: initial; flex-basis: auto; flex-direction: row; align-items: center; justify-content: center; align-self: auto; width: 15%; height: 75%; flex-shrink: 1; -unity-background-scale-mode: stretch-to-fill; background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255); flex-wrap: wrap;">
+                <ui:Instance template="ItemSlot" name="Slot1" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot2" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot3" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot4" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot5" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+                <ui:Instance template="ItemSlot" name="Slot6" style="justify-content: center; align-items: center; align-self: auto; width: 33%; height: 48%;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Instance template="CraftingInventory" name="CraftingInventory" style="position: absolute; width: 20%; height: 30%; right: 2%; bottom: 20%;" />
+        <ui:VisualElement name="DraggedElement" enabled="false" style="flex-grow: initial; position: absolute; width: 75px; height: 75px; background-color: rgba(255, 255, 255, 0); background-image: none; -unity-slice-left: 0; -unity-background-scale-mode: scale-and-crop;">
+            <ui:Label text="0" name="Amount" style="position: absolute; bottom: 0; right: 0;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
