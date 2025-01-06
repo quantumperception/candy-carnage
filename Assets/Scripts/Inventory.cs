@@ -12,20 +12,22 @@ public enum InventoryType
     Crafting
 }
 
+[System.Serializable]
+public struct ItemAmount
+{
+    public IIData Item;
+    public int Amount;
+}
+
 
 public class Inventory : MonoBehaviour
 {
-    [System.Serializable]
-    public struct DefaultItem
-    {
-        public IIData Item;
-        public int Amount;
-    }
+
     public Vector2Int m_size;
     public Vector2Int m_slotSize;
     public InventoryType m_type = InventoryType.Items;
     public InventoryItem[] m_items;
-    public List<DefaultItem> m_defaultItems;
+    public List<ItemAmount> m_defaultItems;
 
     private VisualElement m_root;
     public VisualElement m_inventoryGrid;
@@ -70,39 +72,44 @@ public class Inventory : MonoBehaviour
     void RunSlotHandler(MouseUpEvent evt, int slot)
     {
         if (evt.button == 2) return;
-        if (m_type == InventoryType.Items) { ItemSlotHandler(evt, slot); return; }
+        if (m_type == InventoryType.Items || m_type == InventoryType.Materials || m_type == InventoryType.Crafting) { ItemSlotHandler(evt, slot); return; }
         if (m_type == InventoryType.Units) { UnitSlotHandler(evt, slot); return; }
-        if (m_type == InventoryType.Materials) { MaterialSlotHandler(evt, slot); return; }
-        if (m_type == InventoryType.Crafting) { CraftingSlotHandler(evt, slot); return; }
     }
 
-    InventoryItem OnItemClick(int slot, bool takeAll)
+    InventoryItem OnItemClick(int slot, bool takeAll) => OnItemClick(slot, GetSlotItem(slot), takeAll);
+
+    InventoryItem OnItemClick(int slot, InventoryItem ii, bool lmb)
     {
-        InventoryItem ii = GetSlotItem(slot);
-        //Debug.Log("Item: " + ii.m_item.m_name);
         if (ii == null) return null;
-        InventoryItem newIi = TakeItem(slot, ii, takeAll ? ii.m_amount : 1);
-        if (BattleUI.Instance.m_draggedElement != null) newIi.Add(BattleUI.Instance.m_draggedElement.m_amount);
-        Debug.Log("New II: " + newIi.m_item.m_name);
+        if (ii.m_amount == 0) return null;
+        if (BattleUI.Instance.m_draggedElement != null)
+        {
+            if (BattleUI.Instance.m_draggedElement.m_item.m_name == ii.m_item.m_name)
+            {
+                if (lmb) AddItem(slot, BattleUI.Instance.m_draggedElement.m_item, BattleUI.Instance.m_draggedElement.TakeAll());
+                else BattleUI.Instance.m_draggedElement.Add(TakeItem(slot, ii, 1).m_amount);
+                return null;
+            }
+            Debug.Log($"Swapped DE: {BattleUI.Instance.m_draggedElement.m_item.m_name} for {ii.m_item.m_name}");
+            SwapItems(slot, BattleUI.Instance.m_draggedElement, ii);
+            return null;
+        }
+        InventoryItem newIi = TakeItem(slot, ii, lmb ? ii.m_amount : 1);
         Debug.Log($"Took {newIi.m_amount} {newIi.m_item.m_name}");
         BattleUI.Instance.SetDraggedElement(newIi);
         return newIi;
     }
 
-    void OnEmptySlotClick(int slot, bool depositAll)
+    void OnEmptySlotClick(int slot, bool lmb)
     {
-        Debug.Log($"OnEmptySlotClick: {slot} | {depositAll}");
         if (BattleUI.Instance.m_draggedElement == null) return;
-        int deposited = 0;
-        if (!depositAll) deposited = BattleUI.Instance.m_draggedElement.Take(1);
-        AddItem(slot, BattleUI.Instance.m_draggedElement.m_item, depositAll ? BattleUI.Instance.m_draggedElement.m_amount : deposited);
-        if (BattleUI.Instance.m_draggedElement.m_amount <= 0) BattleUI.Instance.SetDraggedElement(null);
+        AddItem(slot, BattleUI.Instance.m_draggedElement.m_item, lmb ? BattleUI.Instance.m_draggedElement.TakeAll() : BattleUI.Instance.m_draggedElement.Take(1));
     }
 
     bool DraggedItemIsValid()
     {
         InventoryItem draggedElement = BattleUI.Instance.m_draggedElement;
-        if (draggedElement == null) return false;
+        if (draggedElement == null) return true;
         if (draggedElement.m_item.m_type == IIData.ItemType.Unit && m_type == InventoryType.Units) return true;
         if (draggedElement.m_item.m_type == IIData.ItemType.Material && m_type == InventoryType.Materials) return true;
         if ((draggedElement.m_item.m_type == IIData.ItemType.Equipment || draggedElement.m_item.m_type == IIData.ItemType.Consumable) && m_type == InventoryType.Items) return true;
@@ -114,29 +121,15 @@ public class Inventory : MonoBehaviour
         Debug.Log("item handler");
         if (!DraggedItemIsValid()) return;
         InventoryItem slotItem = GetSlotItem(slot);
-        if (evt.button == 0 && BattleUI.Instance.m_draggedElement != null && slotItem != null) { SwapItems(slot, BattleUI.Instance.m_draggedElement, slotItem); return; }
-        InventoryItem ii = OnItemClick(slot, evt.button == 0);
-        if (ii == null) OnEmptySlotClick(slot, evt.button == 0);
+        if (slotItem == null) OnEmptySlotClick(slot, evt.button == 0);
+        OnItemClick(slot, slotItem, evt.button == 0);
     }
     void UnitSlotHandler(MouseUpEvent evt, int slot)
     {
         Debug.Log("unit handler");
-        InventoryItem ii = OnItemClick(slot, false);
-        if (ii == null) OnEmptySlotClick(slot, false);
-        Debug.Log("Selected unit: " + ii.m_item);
-        BattleManager.Instance.m_selectedUnit = ii.m_item as Unit;
-    }
-    void MaterialSlotHandler(MouseUpEvent evt, int slot)
-    {
-        Debug.Log("mat handler");
-        InventoryItem ii = OnItemClick(slot, evt.button == 0);
-        if (ii == null) OnEmptySlotClick(slot, evt.button == 0);
-    }
-    void CraftingSlotHandler(MouseUpEvent evt, int slot)
-    {
-        Debug.Log("craft handler");
-        InventoryItem ii = OnItemClick(slot, evt.button == 0);
-        if (ii == null) OnEmptySlotClick(slot, evt.button == 0);
+        InventoryItem slotItem = GetSlotItem(slot);
+        if (slotItem == null) OnEmptySlotClick(slot, false);
+        OnItemClick(slot, slotItem, false);
     }
 
     InventoryItem GetSlotItem(int slot) => m_items.ElementAtOrDefault(slot);
@@ -153,8 +146,8 @@ public class Inventory : MonoBehaviour
 
     void SwapItems(int slot, InventoryItem intoInventory, InventoryItem intoDragged)
     {
-        m_items[slot] = intoInventory;
-        BattleUI.Instance.m_draggedElement = intoDragged;
+        SetItem(slot, intoInventory);
+        BattleUI.Instance.SetDraggedElement(intoDragged);
     }
 
     public void AddItem(IIData item, int amount = 1)
@@ -165,18 +158,25 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(int slot, IIData item, int amount = 1)
     {
-        if (StackIfItemExists(item, amount)) return;
+        if (StackIfItemExists(item, amount, slot)) return;
         AddNewItem(slot, item, amount);
     }
 
-    bool StackIfItemExists(IIData item, int amount)
+    void SetItem(int slot, InventoryItem item)
+    {
+        InventoryItem ii = new(item.m_item, item.m_amount, item.m_inventory, item.m_slot);
+        m_items[slot] = ii;
+        BattleUI.Instance.SetItem(m_inventoryGrid, slot, ii);
+    }
+
+
+    bool StackIfItemExists(IIData item, int amount, int slot = -1)
     {
         Debug.Log("StackIfItemExists");
         for (int i = 0; i < m_items.Length; i++)
         {
-            if (m_items[i] == null || m_items[i].m_item.m_name != item.m_name) continue;
-            m_items[i].m_amount += amount;
-            BattleUI.Instance.SetItem(m_inventoryGrid, i, item.m_icon.texture, m_items[i].m_amount);
+            if ((slot >= 0 && slot != i) || (m_items[i] == null || m_items[i].m_item.m_name != item.m_name)) continue;
+            m_items[i].Add(amount);
             Debug.Log("Stacked");
             return true;
         }
@@ -186,7 +186,7 @@ public class Inventory : MonoBehaviour
     void AddNewItem(int slot, IIData item, int amount)
     {
         Debug.Log("AddNewItem");
-        InventoryItem ii = new(item, amount);
+        InventoryItem ii = new(item, amount, this, slot);
         m_items[slot] = ii;
         BattleUI.Instance.SetItem(m_inventoryGrid, slot, ii);
     }
@@ -215,3 +215,4 @@ public class Inventory : MonoBehaviour
     public InventoryItem GetII(Item item) => m_items.First(i => i.m_item.m_name == item.m_name);
 
 }
+

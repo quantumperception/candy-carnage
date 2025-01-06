@@ -162,7 +162,8 @@ public class BattleUI : MonoBehaviour
         draggedElement.SetEnabled(false);
         draggedElementAmount.visible = item != null && item.m_amount > 1;
         m_draggedElement = item;
-        if (item == null) return;
+        if (item == null) { BattleManager.Instance.SetSelectedUnit(null); return; }
+        if (item.m_item is Unit) BattleManager.Instance.SetSelectedUnit(item.m_item as Unit);
         draggedElementAmount.text = item.m_amount.ToString();
         draggedElement.style.backgroundImage = item.m_item.m_icon.texture;
         Debug.Log($"Dragged element: {item.m_item.m_name}");
@@ -176,10 +177,26 @@ public class BattleUI : MonoBehaviour
         SetSlotIcon(visualSlot, tex, amount);
     }
 
+
     public void RemoveItem(VisualElement inventory, int slot)
     {
         VisualElement visualSlot = inventory.Children().ElementAt(slot);
         if (visualSlot == null) return;
         ClearSlot(visualSlot);
     }
+
+    public int TakeFromDraggedElement(int amount)
+    {
+        int result = m_draggedElement.Take(amount);
+        
+        return result;
+    }
+
+    public int TakeAllFromDraggedElement()
+    {
+        int result = m_draggedElement.TakeAll();
+        SetDraggedElement(null);
+        return result;
+    }
+
 }

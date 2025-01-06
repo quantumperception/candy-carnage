@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class Unit : IIData
@@ -277,3 +278,14 @@ public class Unit : IIData
     }
     public override string ToString() => m_name;
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(Unit))]
+public class UnitEditor : IIDataEditor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+    }
+}
+#endif

@@ -106,6 +106,27 @@ MonoBehaviour:
   m_description: Un bollo relleno con forma de conejo
   m_icon: {fileID: 21300000, guid: 7227aef38be9afd45979a4ce3eeb5829, type: 2}
   m_type: 2
+  m_recipes:
+  - m_items:
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+  m_unitType: 0
   m_movementSpeed: 1
   m_cell: {fileID: 0}
   m_stationary: 0

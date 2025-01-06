@@ -17,6 +17,8 @@ Shader "Valkyrie/ToonShader"
 		// Control how smoothly the rim blends when approaching unlit
 		// parts of the surface.
 		_RimThreshold("Rim Threshold", Range(0, 1)) = 0.1
+		
+		 [Enum(UnityEngine.Rendering.CullMode)] _CullMode("Cull Mode", Int) = 0
 
 	}
 	SubShader
@@ -31,6 +33,8 @@ Shader "Valkyrie/ToonShader"
 				"PassFlags" = "OnlyDirectional"
 			}
 
+			Cull [_CullMode]
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -42,6 +46,8 @@ Shader "Valkyrie/ToonShader"
 			// with lighting and shadows.
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc"
+
+		
 
 			struct appdata
 			{
@@ -91,6 +97,7 @@ Shader "Valkyrie/ToonShader"
 
 			float4 frag (v2f i) : SV_Target
 			{
+
 				float3 normal = normalize(i.worldNormal);
 				float3 viewDir = normalize(i.viewDir);
 

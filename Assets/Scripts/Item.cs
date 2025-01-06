@@ -1,7 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+
+
+
+
 
 public class Item : IIData
 {
@@ -27,7 +30,7 @@ public class Item : IIData
     }
 
     public override string ToString() => m_name;
-    
+
     public override int GetHashCode() => m_name.GetHashCode();
 
     public override bool Equals(object other)
@@ -38,3 +41,16 @@ public class Item : IIData
     }
 
 }
+
+#if UNITY_EDITOR
+
+[CustomEditor(typeof(Item))]
+public class ItemEditor : IIDataEditor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+    }
+}
+
+#endif

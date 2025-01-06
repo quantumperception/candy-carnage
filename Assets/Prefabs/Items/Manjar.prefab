@@ -49,10 +49,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: Manjar
-  m_icon: {fileID: 21300000, guid: 3ede43e8b8db9444ebe91413a16ddd47, type: 3}
   m_description: 
-  m_team: 0
+  m_icon: {fileID: 21300000, guid: 3ede43e8b8db9444ebe91413a16ddd47, type: 3}
   m_type: 0
+  m_recipes:
+  - rid: -2
+  m_team: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!65 &6398721432039587567
 BoxCollider:
   m_ObjectHideFlags: 0

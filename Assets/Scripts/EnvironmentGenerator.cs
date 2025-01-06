@@ -1,63 +1,124 @@
 using Cysharp.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class EnvironmentGenerator : MonoBehaviour
 {
+    [SerializeField] BattleGrid m_battleGrid;
     public int m_width;
     public int m_height;
+    public float m_tileSize = 1f;
     bool m_runningEditor = false;
+    public float m_randomStrength = 1;
     [SerializeField] MeshFilter m_terrainFilter;
     Mesh m_terrainMesh;
+    float[] m_randomYCoords;
+    bool m_updating = false;
+    public Vector2 m_perlinOffsetDetail;
+    public Vector2 m_perlinScaleDetail;
+    public Vector2 m_perlinOffsetBase;
+    public Vector2 m_perlinScaleBase;
     void Start()
     {
-        m_width = BattleGrid.Instance.m_width * 3;
-        m_height = BattleGrid.Instance.m_height * 3;
+
     }
 
+    private void OnEnable()
+    {
+        m_width = m_battleGrid.m_width * 30;
+        m_height = m_battleGrid.m_height * 30;
+        m_updating = true;
+        StartTerrainUpdate();
+
+    }
+    private void OnDisable()
+    {
+        m_updating = false;
+    }
     void Update()
     {
-        CreateTerrain();
     }
 
     async void StartTerrainUpdate()
     {
-        await UniTask.WaitForSeconds(1);
+        if (!m_updating) return;
+        await UniTask.WaitForSeconds(0.1f);
         CreateTerrain();
         StartTerrainUpdate();
     }
 
+    void CreateRandoms()
+    {
+        m_randomYCoords = new float[(m_width * 2 + 1) * (m_height * 2 + 1)];
+        int i = 0;
+        for (float y = 0f; y <= m_height; y += m_tileSize)
+            for (float x = 0f; x <= m_width; x += m_tileSize, i++)
+                m_randomYCoords[i] =
+                    Mathf.PerlinNoise(
+                        (x + m_perlinOffsetDetail.x) * m_perlinScaleDetail.x,
+                        (y + m_perlinOffsetDetail.y) * m_perlinScaleDetail.y)
+                    + (Mathf.PerlinNoise(
+                        (x + m_perlinOffsetBase.x) * m_perlinScaleBase.x,
+                        (y + m_perlinOffsetBase.y) * m_perlinScaleBase.y)) * 3;
+    }
+
     void UpdateTerrain()
     {
-        Debug.Log("updating terrain");
+        //Debug.Log("updating terrain");
+        m_terrainMesh.Clear();
+        Vector3[] vertices = new Vector3[(m_width * 2 + 1) * (m_height * 2 + 1)];
+        int i = 0;
+        for (float y = 0f; y <= m_height; y += m_tileSize)
+            for (float x = 0f; x <= m_width; x += m_tileSize, i++)
+                vertices[i] = new Vector3(y, m_randomYCoords[i], x);
 
-        Vector3[] vertices = new Vector3[(m_width + 1) * (m_height + 1)];
-        for (int i = 0, y = 0; y <= m_height; y++)
-            for (int x = 0; x <= m_width; x++, i++)
-                vertices[i] = new Vector3(y, 0, x);
-        m_terrainMesh.vertices = vertices;
-
-        int[] triangles = new int[m_width * m_height * 6];
-        for (int ti = 0, vi = 0, y = 0; y < m_height; y++, vi++)
+        int[] triangles = new int[m_width * 2 * m_height * 2 * 6];
+        int tris = 0, vert = 0;
+        for (float y = 0f; y < m_height; y += m_tileSize)
         {
-            for (int x = 0; x < m_width; x++, ti += 6, vi++)
+            for (float x = 0f; x < m_width; x += m_tileSize)
             {
-                triangles[ti] = vi;
-                triangles[ti + 3] = triangles[ti + 2] = vi + 1;
-                triangles[ti + 4] = triangles[ti + 1] = vi + m_width + 1;
-                triangles[ti + 5] = vi + m_width + 2;
+                triangles[tris] = vert;
+                triangles[tris + 1] = vert + m_width + 1;
+                triangles[tris + 2] = vert + 1;
+                triangles[tris + 3] = vert + 1;
+                triangles[tris + 4] = vert + m_width + 1;
+                triangles[tris + 5] = vert + m_width + 2;
+                vert++;
+                tris += 6;
             }
         }
+        //for (int idx = 1; idx < triangles.Length; idx++)
+        //{
+        //    Debug.DrawLine(vertices[triangles[i - 1]], vertices[triangles[idx]], Color.red, 5f);
+        //}
+        m_terrainMesh.vertices = vertices;
         m_terrainMesh.triangles = triangles;
+        m_terrainMesh.RecalculateNormals();
     }
 
-    void CreateTerrain()
+    public void CreateTerrain()
     {
-        Debug.Log("creating terrain");
+        //Debug.Log("creating terrain");
         m_terrainMesh = new() { name = "Terrain" };
+        CreateRandoms();
         UpdateTerrain();
-        m_terrainMesh.RecalculateNormals();
         m_terrainFilter.mesh = m_terrainMesh;
-        transform.position = BattleGrid.Instance.GetWorldCenter();
+        transform.position = -2 * m_battleGrid.GetWorldCenter();
     }
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(EnvironmentGenerator))]
+public class EnvironmentEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        EnvironmentGenerator eg = target as EnvironmentGenerator;
+        if (GUILayout.Button("Create Terrain")) eg.CreateTerrain();
+    }
+}
+
+#endif

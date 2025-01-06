@@ -221,10 +221,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_name: Leche
-  m_icon: {fileID: 21300000, guid: 5d7db71fc7e608e46ab707e8e747249d, type: 3}
   m_description: 
-  m_team: 0
+  m_icon: {fileID: 21300000, guid: 5d7db71fc7e608e46ab707e8e747249d, type: 3}
   m_type: 0
+  m_recipes:
+  - m_items:
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+    - Item: {fileID: 0}
+      Amount: 0
+  m_team: 0
 --- !u!65 &3938379345069930017
 BoxCollider:
   m_ObjectHideFlags: 0
